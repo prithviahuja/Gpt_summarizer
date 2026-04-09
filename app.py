@@ -53,12 +53,17 @@ with st.sidebar:
     st.title("⚙️ Settings")
     api_key = st.text_input("API Key (Optional)", type="password", placeholder="Gemini or Groq key...", help="Leave blank to use server-side .env key")
     model = st.selectbox("Model", [
-        "gemini-2.0-flash", 
-        "gemini-2.5-flash", 
         "gemini-3-flash-preview",
-        "llama-3.3-70b-versatile", 
-        "llama-3.1-8b-instant"
-    ])
+        "gemini-3.1-pro-preview", 
+        "llama-3.3-70b-versatile"
+    ], help="Llama = Fast/Concise | Gemini = Large/Detailed")
+    
+    st.info("""
+    💡 **Quick Guide:**
+    - **Llama 3.3**: Fast, concise results for smaller inputs.
+    - **Gemini 3**: Massive context support for large inputs & detailed results.
+    """)
+    
     st.markdown("---")
     st.markdown("### 📖 How to use")
     st.markdown("""

@@ -115,7 +115,7 @@ async def _call_groq(model_name: str, system_prompt: str, user_prompt: str, api_
     )
     return response.choices[0].message.content
 
-async def extract_from_chunk(chunk_text: str, model: str = "gemini-2.0-flash", api_key: str = None) -> dict:
+async def extract_from_chunk(chunk_text: str, model: str = "gemini-3-flash-preview", api_key: str = None) -> dict:
     user_prompt = f"Extract structured intelligence from this chat segment:\n\n{chunk_text}"
     
     if "gemini" in model.lower():
@@ -130,7 +130,7 @@ async def extract_from_chunk(chunk_text: str, model: str = "gemini-2.0-flash", a
         
     return _parse_json_response(content)
 
-async def merge_extractions(extractions: list, model: str = "gemini-2.0-flash", api_key: str = None) -> dict:
+async def merge_extractions(extractions: list, model: str = "gemini-3-flash-preview", api_key: str = None) -> dict:
     if len(extractions) == 1:
         return extractions[0]
 
