@@ -10,8 +10,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configure Gemini
-if os.getenv("GEMINI_API_KEY"):
-    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+key = os.getenv("GEMINI_API_KEY")
+print(f"DEBUG: GEMINI_API_KEY found: {key is not None}")
+if key:
+    genai.configure(api_key=key)
 
 EXTRACTION_SYSTEM_PROMPT = """You are an expert context extraction engine. Your job is to analyze chat conversations between a user and an AI assistant and extract STRUCTURED INTELLIGENCE — not summaries.
 
@@ -113,21 +115,22 @@ async def _call_groq(model_name: str, system_prompt: str, user_prompt: str, api_
     )
     return response.choices[0].message.content
 
-async def extract_from_chunk(chunk_text: str, model: str = "gemini-1.5-flash", api_key: str = None) -> dict:
+async def extract_from_chunk(chunk_text: str, model: str = "gemini-2.0-flash", api_key: str = None) -> dict:
     user_prompt = f"Extract structured intelligence from this chat segment:\n\n{chunk_text}"
     
     if "gemini" in model.lower():
-        key = api_key or os.getenv("GEMINI_API_KEY")
+        # Handle empty strings from UI explicitly
+        key = api_key if api_key and api_key.strip() else os.getenv("GEMINI_API_KEY")
         if not key: raise ValueError("GEMINI_API_KEY not found")
         content = await _call_gemini(model, EXTRACTION_SYSTEM_PROMPT, user_prompt, key)
     else:
-        key = api_key or os.getenv("GROQ_API_KEY")
+        key = api_key if api_key and api_key.strip() else os.getenv("GROQ_API_KEY")
         if not key: raise ValueError("GROQ_API_KEY not found")
         content = await _call_groq(model, EXTRACTION_SYSTEM_PROMPT, user_prompt, key)
         
     return _parse_json_response(content)
 
-async def merge_extractions(extractions: list, model: str = "gemini-1.5-flash", api_key: str = None) -> dict:
+async def merge_extractions(extractions: list, model: str = "gemini-2.0-flash", api_key: str = None) -> dict:
     if len(extractions) == 1:
         return extractions[0]
 
@@ -135,11 +138,11 @@ async def merge_extractions(extractions: list, model: str = "gemini-1.5-flash", 
     user_prompt = f"Merge these extracted JSON objects into one:\n\n{payload}"
     
     if "gemini" in model.lower():
-        key = api_key or os.getenv("GEMINI_API_KEY")
+        key = api_key if api_key and api_key.strip() else os.getenv("GEMINI_API_KEY")
         if not key: raise ValueError("GEMINI_API_KEY not found")
         content = await _call_gemini(model, MERGE_SYSTEM_PROMPT, user_prompt, key)
     else:
-        key = api_key or os.getenv("GROQ_API_KEY")
+        key = api_key if api_key and api_key.strip() else os.getenv("GROQ_API_KEY")
         if not key: raise ValueError("GROQ_API_KEY not found")
         content = await _call_groq(model, MERGE_SYSTEM_PROMPT, user_prompt, key)
         

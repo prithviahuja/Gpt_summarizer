@@ -9,7 +9,7 @@ router = APIRouter()
 
 class ExtractRequest(BaseModel):
     chat_text: str
-    model: Optional[str] = "gemini-1.5-flash"
+    model: Optional[str] = "gemini-2.0-flash"
     api_key: Optional[str] = None
 
 

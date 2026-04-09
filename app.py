@@ -53,8 +53,9 @@ with st.sidebar:
     st.title("⚙️ Settings")
     api_key = st.text_input("API Key (Optional)", type="password", placeholder="Gemini or Groq key...", help="Leave blank to use server-side .env key")
     model = st.selectbox("Model", [
-        "gemini-1.5-flash", 
-        "gemini-1.5-pro", 
+        "gemini-2.0-flash", 
+        "gemini-2.5-flash", 
+        "gemini-3-flash-preview",
         "llama-3.3-70b-versatile", 
         "llama-3.1-8b-instant"
     ])
