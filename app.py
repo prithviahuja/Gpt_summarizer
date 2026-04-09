@@ -51,18 +51,23 @@ st.markdown("""
 
 with st.sidebar:
     st.title("⚙️ Settings")
-    api_key = st.text_input("Groq API Key (Optional)", type="password", placeholder="gsk_...", help="Leave blank to use server-side .env key")
-    model = st.selectbox("Model", ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"])
+    api_key = st.text_input("API Key (Optional)", type="password", placeholder="Gemini or Groq key...", help="Leave blank to use server-side .env key")
+    model = st.selectbox("Model", [
+        "gemini-1.5-flash", 
+        "gemini-1.5-pro", 
+        "llama-3.3-70b-versatile", 
+        "llama-3.1-8b-instant"
+    ])
     st.markdown("---")
     st.markdown("### 📖 How to use")
     st.markdown("""
 1. Paste your full chat history below
-2. Enter Groq API key (or leave blank)
+2. Enter API key (or leave blank for default)
 3. Click **Compress**
 4. Copy the Context Pack into a new chat
     """)
     st.markdown("---")
-    st.caption("Context Compression Engine v1.0 (Groq Powered)")
+    st.caption("Context Compression Engine v1.1 (Gemini & Groq)")
 
 st.title("🧠 Context Compression Engine")
 st.markdown("*Transform thousands of lines of chat history into structured, reusable intelligence.*")

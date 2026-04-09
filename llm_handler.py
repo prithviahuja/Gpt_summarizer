@@ -3,10 +3,15 @@ import re
 import asyncio
 import os
 from groq import AsyncGroq
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Configure Gemini
+if os.getenv("GEMINI_API_KEY"):
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 EXTRACTION_SYSTEM_PROMPT = """You are an expert context extraction engine. Your job is to analyze chat conversations between a user and an AI assistant and extract STRUCTURED INTELLIGENCE — not summaries.
 
@@ -42,7 +47,6 @@ Return ONLY this JSON structure:
   "notes": ["string"]
 }"""
 
-
 MERGE_SYSTEM_PROMPT = """You are a deduplication and merging engine. You receive multiple JSON objects extracted from chunks of the same conversation.
 
 Merge them into ONE unified JSON object. Rules:
@@ -65,7 +69,6 @@ Schema:
   "notes": ["string"]
 }"""
 
-
 def _parse_json_response(text: str) -> dict:
     text = text.strip()
     text = re.sub(r"^```json\s*", "", text)
@@ -79,46 +82,68 @@ def _parse_json_response(text: str) -> dict:
             return json.loads(match.group())
         raise ValueError(f"Could not parse JSON from LLM response: {text[:300]}")
 
-
-async def extract_from_chunk(chunk_text: str, model: str = "llama-3.3-70b-versatile", api_key: str = None) -> dict:
-    key = api_key or os.getenv("GROQ_API_KEY")
-    if not key:
-        raise ValueError("GROQ_API_KEY not found in environment or provided")
+async def _call_gemini(model_name: str, system_prompt: str, user_prompt: str, api_key: str = None) -> str:
+    if api_key:
+        genai.configure(api_key=api_key)
     
-    client = AsyncGroq(api_key=key)
-    response = await client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
-            {"role": "user", "content": f"Extract structured intelligence from this chat segment:\n\n{chunk_text}"}
-        ],
-        temperature=0.1,
-        max_tokens=2000,
+    model = genai.GenerativeModel(
+        model_name=model_name,
+        system_instruction=system_prompt
     )
-    return _parse_json_response(response.choices[0].message.content)
+    
+    response = await model.generate_content_async(
+        user_prompt,
+        generation_config=genai.types.GenerationConfig(
+            temperature=0.1,
+            max_output_tokens=2500,
+        )
+    )
+    return response.text
 
-
-async def merge_extractions(extractions: list, model: str = "llama-3.3-70b-versatile", api_key: str = None) -> dict:
-    if len(extractions) == 1:
-        return extractions[0]
-
-    key = api_key or os.getenv("GROQ_API_KEY")
-    if not key:
-        raise ValueError("GROQ_API_KEY not found in environment or provided")
-
-    client = AsyncGroq(api_key=key)
-    payload = json.dumps(extractions, indent=2)
+async def _call_groq(model_name: str, system_prompt: str, user_prompt: str, api_key: str) -> str:
+    client = AsyncGroq(api_key=api_key)
     response = await client.chat.completions.create(
-        model=model,
+        model=model_name,
         messages=[
-            {"role": "system", "content": MERGE_SYSTEM_PROMPT},
-            {"role": "user", "content": f"Merge these extracted JSON objects into one:\n\n{payload}"}
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
         ],
         temperature=0.1,
         max_tokens=2500,
     )
-    return _parse_json_response(response.choices[0].message.content)
+    return response.choices[0].message.content
 
+async def extract_from_chunk(chunk_text: str, model: str = "gemini-1.5-flash", api_key: str = None) -> dict:
+    user_prompt = f"Extract structured intelligence from this chat segment:\n\n{chunk_text}"
+    
+    if "gemini" in model.lower():
+        key = api_key or os.getenv("GEMINI_API_KEY")
+        if not key: raise ValueError("GEMINI_API_KEY not found")
+        content = await _call_gemini(model, EXTRACTION_SYSTEM_PROMPT, user_prompt, key)
+    else:
+        key = api_key or os.getenv("GROQ_API_KEY")
+        if not key: raise ValueError("GROQ_API_KEY not found")
+        content = await _call_groq(model, EXTRACTION_SYSTEM_PROMPT, user_prompt, key)
+        
+    return _parse_json_response(content)
+
+async def merge_extractions(extractions: list, model: str = "gemini-1.5-flash", api_key: str = None) -> dict:
+    if len(extractions) == 1:
+        return extractions[0]
+
+    payload = json.dumps(extractions, indent=2)
+    user_prompt = f"Merge these extracted JSON objects into one:\n\n{payload}"
+    
+    if "gemini" in model.lower():
+        key = api_key or os.getenv("GEMINI_API_KEY")
+        if not key: raise ValueError("GEMINI_API_KEY not found")
+        content = await _call_gemini(model, MERGE_SYSTEM_PROMPT, user_prompt, key)
+    else:
+        key = api_key or os.getenv("GROQ_API_KEY")
+        if not key: raise ValueError("GROQ_API_KEY not found")
+        content = await _call_groq(model, MERGE_SYSTEM_PROMPT, user_prompt, key)
+        
+    return _parse_json_response(content)
 
 EMPTY_SCHEMA = {
     "user_goal": "",

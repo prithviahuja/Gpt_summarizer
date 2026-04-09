@@ -1,10 +1,10 @@
 import asyncio
 from typing import List
-from parser import Chunk
+from chat_parser import Chunk
 from llm_handler import extract_from_chunk, merge_extractions, EMPTY_SCHEMA
 
 
-PARALLEL_BATCH_SIZE = 5
+PARALLEL_BATCH_SIZE = 3
 
 
 async def _process_chunk(chunk: Chunk, model: str = None, api_key: str = None) -> dict:

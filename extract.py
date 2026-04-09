@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from parser import parse_chat
+from typing import Optional
+from chat_parser import parse_chat
 from compressor import compress_chunks
 
 router = APIRouter()
@@ -8,8 +9,8 @@ router = APIRouter()
 
 class ExtractRequest(BaseModel):
     chat_text: str
-    model: str = None
-    api_key: str = None  # Renamed from openai_api_key
+    model: Optional[str] = "gemini-1.5-flash"
+    api_key: Optional[str] = None
 
 
 @router.post("")

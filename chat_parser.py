@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass, field
 from typing import List
 
-CHUNK_TOKEN_LIMIT = 3000
+CHUNK_TOKEN_LIMIT = 2000
 AVG_CHARS_PER_TOKEN = 4
 
 
