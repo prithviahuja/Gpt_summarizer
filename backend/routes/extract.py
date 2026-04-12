@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from chat_parser import parse_chat
-from compressor import compress_chunks
+from services.chat_parser import parse_chat
+from services.compressor import compress_chunks
 
 router = APIRouter()
 

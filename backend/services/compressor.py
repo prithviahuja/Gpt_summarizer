@@ -1,7 +1,7 @@
 import asyncio
 from typing import List
-from chat_parser import Chunk
-from llm_handler import extract_from_chunk, merge_extractions, EMPTY_SCHEMA
+from services.chat_parser import Chunk
+from services.llm_handler import extract_from_chunk, merge_extractions, EMPTY_SCHEMA
 
 
 PARALLEL_BATCH_SIZE = 3

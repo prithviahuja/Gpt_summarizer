@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from compress import router as compress_router
-from extract import router as extract_router
+from routes.compress import router as compress_router
+from routes.extract import router as extract_router
 from dotenv import load_dotenv
 
 # Load environment variables

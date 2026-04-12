@@ -36,7 +36,7 @@ context-engine/
 │   │   ├── compress.py
 │   │   └── extract.py
 │   └── services/
-│       ├── parser.py         # Chat parsing & chunking
+│       ├── chat_parser.py    # Chat parsing & chunking
 │       ├── compressor.py     # Async parallel processing
 │       ├── llm_handler.py    # Prompts & OpenAI calls
 │       └── formatter.py      # Context Pack generator
