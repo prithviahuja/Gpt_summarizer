@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(
-    title="Context Compression & Transfer Engine",
-    version="1.1.0",
+    title="Pack GPT | Context Compression Engine",
+    version="1.2.0",
     description="Compress long chat histories into structured, information-dense context packs"
 )
 

@@ -1,4 +1,4 @@
-# Context Compression Engine - Implementation Guide
+# Pack GPT | Context Compression Engine - Implementation Guide
 
 ## Overview
 

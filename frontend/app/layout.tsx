@@ -7,7 +7,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Context Compression Engine',
+  title: 'Pack GPT | Context Compression Engine',
   description: 'Transform long conversations and chat histories into structured insights with AI-powered compression',
   generator: 'v0.app',
   icons: {

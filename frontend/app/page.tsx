@@ -101,8 +101,8 @@ export default function Page() {
 
           {/* Header */}
           <div className="space-y-2 animate-in fade-in-50 duration-500">
-            <h1 className="text-3xl md:text-4xl font-bold gradient-text">Context Compression Engine</h1>
-            <p className="text-muted-foreground/90">Compress your chat history into actionable insights</p>
+            <h1 className="text-3xl md:text-5xl font-extrabold gradient-text tracking-tight italic">Pack GPT</h1>
+            <p className="text-muted-foreground/90 text-lg font-medium">Context Compression Engine</p>
           </div>
 
           {/* Input + Controls — always landscape: textarea left (2/3), controls right (1/3) */}
